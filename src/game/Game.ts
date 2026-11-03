@@ -190,11 +190,14 @@ export class Game {
     // Clamp dt to avoid physics exploding after tab suspension
     if (dt > 0.08) dt = 0.08;
 
-    if (this.state === 'PLAYING') {
-      this.update(dt);
+    try {
+      if (this.state === 'PLAYING') {
+        this.update(dt);
+      }
+      this.render();
+    } catch (err) {
+      console.error('Game loop error:', err);
     }
-
-    this.render();
 
     this.animFrameId = requestAnimationFrame(this.loop);
   };
@@ -271,7 +274,11 @@ export class Game {
     this.isFever = true;
     this.feverTimer = FEVER_DURATION;
     this.nitro = 100;
-    soundEngine.playFeverStart();
+    try {
+      soundEngine.playFeverStart();
+    } catch (e) {
+      console.warn('Audio playFeverStart error:', e);
+    }
     this.particles.triggerFlash('#FFE600', 0.65);
     this.particles.triggerShake(12);
     this.particles.emitFeverBurst();

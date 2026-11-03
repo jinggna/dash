@@ -322,23 +322,27 @@ class SoundEngine {
 
   playFeverStart() {
     if (this.isMuted) return;
-    this.initContext();
-    if (!this.ctx) return;
-    const now = this.ctx.currentTime;
-    const notes = [440, 554.37, 659.25, 880, 1108.73, 1318.51];
-    notes.forEach((freq, idx) => {
+    try {
+      this.initContext();
       if (!this.ctx) return;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(freq, now + idx * 0.05);
-      gain.gain.setValueAtTime(0.18, now + idx * 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.25);
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-      osc.start(now + idx * 0.05);
-      osc.stop(now + idx * 0.05 + 0.28);
-    });
+      const now = this.ctx.currentTime;
+      const notes = [440, 554.37, 659.25, 880, 1108.73, 1318.51];
+      notes.forEach((freq, idx) => {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.05);
+        gain.gain.setValueAtTime(0.18, now + idx * 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.25);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now + idx * 0.05);
+        osc.stop(now + idx * 0.05 + 0.28);
+      });
+    } catch (e) {
+      console.warn('Audio playFeverStart error:', e);
+    }
   }
 
   playTick() {
@@ -865,6 +869,14 @@ class ParticleSystem {
     this.recoilX = 10;
   }
 
+  triggerShake(intensity = 8) {
+    if (intensity >= 12) {
+      this.triggerCrashShake();
+    } else {
+      this.triggerNearMissShake();
+    }
+  }
+
   triggerFlash(color = '#FFFFFF', initialAlpha = 0.5) {
     this.flashColor = color;
     this.flashAlpha = initialAlpha;
@@ -1070,6 +1082,7 @@ class ParticleSystem {
     for (const s of this.speedStreaks) {
       const alpha = Math.min(1, s.alpha * this.feverIntensity);
       if (alpha <= 0.01) continue;
+      if (!Number.isFinite(s.x) || !Number.isFinite(s.y) || !Number.isFinite(s.length) || s.length <= 0) continue;
 
       ctx.save();
       ctx.globalAlpha = alpha;
@@ -1972,15 +1985,26 @@ class Game {
   }
 
   loop(timestamp) {
+    if (this.state === 'GAMEOVER') {
+      try {
+        this.render();
+      } catch (e) {}
+      return;
+    }
+
     let dt = (timestamp - this.lastTime) / 1000;
     this.lastTime = timestamp;
     if (dt > 0.08) dt = 0.08;
 
-    if (this.state === 'PLAYING') {
-      this.update(dt);
+    try {
+      if (this.state === 'PLAYING') {
+        this.update(dt);
+      }
+      this.render();
+    } catch (err) {
+      console.error('Game loop error:', err);
     }
 
-    this.render();
     this.animFrameId = requestAnimationFrame((ts) => this.loop(ts));
   }
 
@@ -2040,7 +2064,11 @@ class Game {
     this.isFever = true;
     this.feverTimer = FEVER_DURATION;
     this.nitro = 100;
-    soundEngine.playFeverStart();
+    try {
+      soundEngine.playFeverStart();
+    } catch (e) {
+      console.warn('Audio playFeverStart error:', e);
+    }
     this.particles.triggerFlash('#FFE600', 0.65);
     this.particles.triggerShake(12);
     this.particles.emitFeverBurst();
