@@ -1,7 +1,19 @@
 # 🏎️ Nitro Dash (니트로 대시)
 
 네온사인이 은은하게 빛나는 사이버펑크 밤도시(Night City)를 질주하는 **40초 타임어택 아케이드 웹 레이싱 게임**입니다.
-외부 그래픽 이미지 자산 없이 **100% HTML5 Canvas 2D API**로 팝업북 입체감(짙은 그림자 & 굵은 외곽선)과 화려한 네온 비주얼을 렌더링합니다.
+
+이 프로젝트는 **순수 HTML5, CSS, Vanilla JavaScript (ES6+)**로 작성되어 있어, Webpack이나 Vite 같은 **별도의 빌드 도구 없이 `index.html`과 `script.js`만으로 GitHub Pages에 바로 배포**할 수 있습니다.
+
+---
+
+## 🌐 GitHub Pages 바로 배포하는 방법 (빌드 도구 불필요!)
+
+1. 본 GitHub 저장소 상단의 **`Settings`** 탭을 클릭합니다.
+2. 좌측 메뉴에서 **`Pages`** 항목을 선택합니다.
+3. **Build and deployment** 섹션의:
+   - **Source**: `Deploy from a branch` 선택
+   - **Branch**: `main` 브랜치 / `/(root)` 폴더 선택 후 **Save** 클릭
+4. 약 1분 후 생성되는 **`https://<사용자명>.github.io/<저장소명>/`** 주소로 접속하면 즉시 게임이 실행됩니다!
 
 ---
 
@@ -9,10 +21,10 @@
 
 - **플레이 타임**: 총 40초 타임어택
 - **조작법**:
-  - `↑` (위) / `↓` (아래) 또는 `W` / `S`: 상·하 2차선 차선 변경 (모바일 터치 버튼 지원)
-  - `Enter`: 게임 시작, 일시정지 / 재개 및 재도전
+  - `↑` (위) / `↓` (아래) 또는 `W` / `S`: 상·하 2차선 차선 변경 (모바일 터치 조작 버튼 지원)
+  - `Enter`: 게임 시작, 일시정지 / 재개 및 다시 시작
 - **핵심 시스템**:
-  - **⚡ 아슬아슬 스침 (Near-miss)**: 장애물 옆 차선을 스쳐 질주하거나 회피 통과 시 **+1,000점 획득 & 니트로 게이지 +30% 급충전!** (미세 공기역학 후류 잔진동 연출)
+  - **⚡ 아슬아슬 스침 (Near-miss)**: 장애물 옆 차선을 스쳐 질주하거나 회피 통과 시 **+1,000점 획득 & 니트로 게이지 +30% 급충전!** (공기역학 미세 잔진동 화면 연출)
   - **💥 정면 충돌 (Crash)**: 장애물과 충돌 시 **-1,000점 감점, 니트로 -25% 감소, 직전 스침 점수 전액 무효화 & 0.5초 차체 스턴!** (강렬한 감속 충격 및 카메라 회전 롤 셰이크)
   - **🔥 무적 대시 (Fever Time)**: 니트로 게이지를 100% 모으면 5초간 피버 타임 발동! 속도 2배 폭증, 캔버스를 가로지르는 **스트리킹 라이트 & 스피드 블러** 발동, 장애물 격파 시 파편 폭발과 함께 **+5,000점 획득!**
 - **레벨 디자인**:
@@ -21,23 +33,23 @@
 
 ---
 
-## 🛠️ 기술 스택 (Tech Stack)
+## 🛠️ 기술 구성 (Zero-Build Vanilla Web)
 
-- **Frontend**: React 19, TypeScript, Tailwind CSS, Vite
-- **Graphics**: 100% Pure HTML5 Canvas 2D API (다각형 SAT 정밀 충돌 판정, 패럴랙스 배경, 입체 그림자, 네온 발광)
+- **Language**: Pure Vanilla JavaScript (ES6+ Class OOP 구조)
+- **Styling**: Tailwind CSS (CDN - 빌드 도구 불필요)
+- **Icons**: Lucide Icons (CDN)
+- **Graphics**: 100% HTML5 Canvas 2D API (다각형 SAT 정밀 충돌 판정, 패럴랙스 배경, 입체 그림자, 네온 발광)
 - **Audio**: Web Audio API 내장 사운드 신디사이저 (엔진 가속음, 스침 차임, 충돌 굉음, 피버 팡파르)
-- **Icons**: Lucide React
 
 ---
 
-## 🚀 로컬 실행 방법 (How to Run)
+## 💻 로컬에서 실행하기
+
+별도의 패키지 설치 없이 `index.html` 파일을 브라우저로 열거나, 로컬 정적 서버로 실행할 수 있습니다:
 
 ```bash
-# 1. 의존성 패키지 설치
-npm install
+# 옵션 1: index.html 파일을 크롬/엣지 브라우저로 바로 더블 클릭하여 실행
 
-# 2. 로컬 개발 서버 실행
-npm run dev
-
-# 브라우저에서 http://localhost:3000 접속
+# 옵션 2: VS Code Live Server 확장 사용 또는 npx serve
+npx serve .
 ```
