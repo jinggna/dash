@@ -249,7 +249,7 @@ export class Game {
     // 4. Update Entities
     this.background.update(dt, currentSpeed);
     this.player.update(dt, this.isFever);
-    this.particles.update(dt);
+    this.particles.update(dt, this.isFever);
     this.floatingTexts.update(dt);
 
     // Exhaust emissions while driving
@@ -274,6 +274,7 @@ export class Game {
     soundEngine.playFeverStart();
     this.particles.triggerFlash('#FFE600', 0.65);
     this.particles.triggerShake(12);
+    this.particles.emitFeverBurst();
     this.floatingTexts.add('FEVER TIME!', this.player.x + 80, this.player.y - 45, '#FFE600', '무적 질주 + 속도 2배!', '#FF007F');
   }
 
@@ -478,11 +479,13 @@ export class Game {
 
     ctx.save();
 
-    // Camera Screen Shake
-    if (this.particles.screenShake > 0) {
-      const shakeX = (Math.random() - 0.5) * this.particles.screenShake;
-      const shakeY = (Math.random() - 0.5) * this.particles.screenShake;
-      ctx.translate(shakeX, shakeY);
+    // Camera Screen Shake (Differentiated by Near-miss vs Crash vs Smash)
+    if (this.particles.shakeTrauma > 0.001) {
+      const cx = VIRTUAL_WIDTH / 2;
+      const cy = VIRTUAL_HEIGHT / 2;
+      ctx.translate(cx, cy);
+      ctx.rotate(this.particles.shakeRotation);
+      ctx.translate(-cx + this.particles.shakeOffsetX, -cy + this.particles.shakeOffsetY);
     }
 
     // 1. Draw Background & Road
@@ -499,13 +502,18 @@ export class Game {
     // 4. Draw Particles
     this.particles.draw(ctx);
 
-    // 5. Draw Floating Pop-up Texts
+    // 5. Fever Speed Blur & Streaking Light Particle Effect across the canvas
+    if (this.isFever || this.particles.feverIntensity > 0.01) {
+      this.particles.drawSpeedBlur(ctx, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+    }
+
+    // 6. Draw Floating Pop-up Texts
     this.floatingTexts.draw(ctx);
 
-    // 6. Flash screen overlay (Near-miss cyan flash or Crash red flash)
+    // 7. Flash screen overlay (Near-miss cyan flash or Crash red flash)
     this.particles.drawFlashOverlay(ctx, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
 
-    // 7. In-Canvas Arcade HUD (Only during active gameplay or pause)
+    // 8. In-Canvas Arcade HUD (Only during active gameplay or pause)
     if (this.state === 'PLAYING' || this.state === 'PAUSED') {
       this.drawInCanvasHUD(ctx);
     }
