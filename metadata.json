@@ -1,0 +1,6 @@
+{
+  "name": "Nitro Dash - 니트로 대시",
+  "description": "네온 도시를 질주하는 40초 타임어택 아케이드 레이싱 게임. 아슬아슬한 스침(Near-miss)과 100% 무적 피버 타임으로 최고 점수를 기록하세요!",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
