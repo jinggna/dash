@@ -85,12 +85,36 @@ export default function App() {
     setIsMuted(muted);
   };
 
+  const lastTouchRef = useRef<number>(0);
+
   const handleLaneUp = () => {
     gameRef.current?.switchLane('UP');
   };
 
   const handleLaneDown = () => {
     gameRef.current?.switchLane('DOWN');
+  };
+
+  const handleTouchLaneUp = (e: React.TouchEvent | React.MouseEvent) => {
+    if ('touches' in e) {
+      e.preventDefault();
+      lastTouchRef.current = Date.now();
+      handleLaneUp();
+    } else {
+      if (Date.now() - lastTouchRef.current < 400) return;
+      handleLaneUp();
+    }
+  };
+
+  const handleTouchLaneDown = (e: React.TouchEvent | React.MouseEvent) => {
+    if ('touches' in e) {
+      e.preventDefault();
+      lastTouchRef.current = Date.now();
+      handleLaneDown();
+    } else {
+      if (Date.now() - lastTouchRef.current < 400) return;
+      handleLaneDown();
+    }
   };
 
   // Rank determination based on final score
@@ -369,22 +393,26 @@ export default function App() {
             </div>
           )}
 
-          {/* MOBILE / ON-SCREEN TOUCH CONTROLS (Positioned cleanly at bottom corners without blocking action) */}
+          {/* MOBILE / ON-SCREEN TOUCH CONTROLS (Enlarged for thumb ergonomics & zero-latency touch) */}
           {gameState === 'PLAYING' && (
-            <div className="absolute bottom-3 left-3 sm:bottom-5 sm:left-5 flex flex-col gap-2 z-10">
+            <div className="absolute bottom-3 left-3 sm:bottom-5 sm:left-5 flex flex-col gap-2.5 sm:gap-3 z-20">
               <button
-                onClick={handleLaneUp}
-                className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-slate-900/85 hover:bg-slate-800 active:scale-90 border-2 border-cyan-400/60 flex items-center justify-center text-cyan-300 shadow-xl cursor-pointer transition backdrop-blur-sm"
-                aria-label="상단 차선 이동"
+                onTouchStart={handleTouchLaneUp}
+                onClick={handleTouchLaneUp}
+                className="w-[72px] h-[72px] sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-slate-950/85 hover:bg-slate-900 active:bg-cyan-950/80 border-2 border-cyan-400/80 active:border-cyan-300 flex flex-col items-center justify-center text-cyan-300 shadow-[0_0_20px_rgba(0,240,255,0.35)] active:shadow-[0_0_30px_rgba(0,240,255,0.7)] cursor-pointer active:scale-90 transition transform duration-75 backdrop-blur-md select-none touch-none"
+                aria-label="상단 차선 이동 (UP)"
               >
-                <ChevronUp className="w-7 h-7 sm:w-9 sm:h-9 stroke-[3]" />
+                <ChevronUp className="w-9 h-9 sm:w-11 sm:h-11 stroke-[3.5]" />
+                <span className="text-[10px] font-extrabold text-cyan-300/80 -mt-1 tracking-widest">위</span>
               </button>
               <button
-                onClick={handleLaneDown}
-                className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-slate-900/85 hover:bg-slate-800 active:scale-90 border-2 border-cyan-400/60 flex items-center justify-center text-cyan-300 shadow-xl cursor-pointer transition backdrop-blur-sm"
-                aria-label="하단 차선 이동"
+                onTouchStart={handleTouchLaneDown}
+                onClick={handleTouchLaneDown}
+                className="w-[72px] h-[72px] sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-slate-950/85 hover:bg-slate-900 active:bg-cyan-950/80 border-2 border-cyan-400/80 active:border-cyan-300 flex flex-col items-center justify-center text-cyan-300 shadow-[0_0_20px_rgba(0,240,255,0.35)] active:shadow-[0_0_30px_rgba(0,240,255,0.7)] cursor-pointer active:scale-90 transition transform duration-75 backdrop-blur-md select-none touch-none"
+                aria-label="하단 차선 이동 (DOWN)"
               >
-                <ChevronDown className="w-7 h-7 sm:w-9 sm:h-9 stroke-[3]" />
+                <ChevronDown className="w-9 h-9 sm:w-11 sm:h-11 stroke-[3.5]" />
+                <span className="text-[10px] font-extrabold text-cyan-300/80 -mt-1 tracking-widest">아래</span>
               </button>
             </div>
           )}

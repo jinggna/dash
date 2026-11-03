@@ -261,21 +261,23 @@
             </div>
           </div>
 
-          <!-- MOBILE ON-SCREEN TOUCH CONTROLS -->
-          <div id="mobile-controls" class="hidden absolute bottom-3 left-3 sm:bottom-5 sm:left-5 flex flex-col gap-2 z-10">
+          <!-- MOBILE ON-SCREEN TOUCH CONTROLS (Enlarged for thumb ergonomics) -->
+          <div id="mobile-controls" class="hidden absolute bottom-3 left-3 sm:bottom-5 sm:left-5 flex flex-col gap-2.5 sm:gap-3 z-20">
             <button
               id="btn-lane-up"
-              class="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-slate-900/85 hover:bg-slate-800 active:scale-90 border-2 border-cyan-400/60 flex items-center justify-center text-cyan-300 shadow-xl cursor-pointer transition backdrop-blur-sm"
-              aria-label="상단 차선 이동"
+              class="w-[72px] h-[72px] sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-slate-950/85 hover:bg-slate-900 active:bg-cyan-950/80 border-2 border-cyan-400/80 active:border-cyan-300 flex flex-col items-center justify-center text-cyan-300 shadow-[0_0_20px_rgba(0,240,255,0.35)] active:shadow-[0_0_30px_rgba(0,240,255,0.7)] cursor-pointer active:scale-90 transition transform duration-75 backdrop-blur-md select-none touch-none"
+              aria-label="상단 차선 이동 (UP)"
             >
-              <i data-lucide="chevron-up" class="w-7 h-7 sm:w-9 sm:h-9 stroke-[3]"></i>
+              <i data-lucide="chevron-up" class="w-9 h-9 sm:w-11 sm:h-11 stroke-[3.5]"></i>
+              <span class="text-[10px] font-extrabold text-cyan-300/80 -mt-1 tracking-widest">위</span>
             </button>
             <button
               id="btn-lane-down"
-              class="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-slate-900/85 hover:bg-slate-800 active:scale-90 border-2 border-cyan-400/60 flex items-center justify-center text-cyan-300 shadow-xl cursor-pointer transition backdrop-blur-sm"
-              aria-label="하단 차선 이동"
+              class="w-[72px] h-[72px] sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-slate-950/85 hover:bg-slate-900 active:bg-cyan-950/80 border-2 border-cyan-400/80 active:border-cyan-300 flex flex-col items-center justify-center text-cyan-300 shadow-[0_0_20px_rgba(0,240,255,0.35)] active:shadow-[0_0_30px_rgba(0,240,255,0.7)] cursor-pointer active:scale-90 transition transform duration-75 backdrop-blur-md select-none touch-none"
+              aria-label="하단 차선 이동 (DOWN)"
             >
-              <i data-lucide="chevron-down" class="w-7 h-7 sm:w-9 sm:h-9 stroke-[3]"></i>
+              <i data-lucide="chevron-down" class="w-9 h-9 sm:w-11 sm:h-11 stroke-[3.5]"></i>
+              <span class="text-[10px] font-extrabold text-cyan-300/80 -mt-1 tracking-widest">아래</span>
             </button>
           </div>
         </div>

@@ -2554,19 +2554,25 @@ window.addEventListener('DOMContentLoaded', () => {
   if (btnHelpHeader) btnHelpHeader.addEventListener('click', () => modalHelp.classList.remove('hidden'));
   if (btnCloseHelp) btnCloseHelp.addEventListener('click', () => modalHelp.classList.add('hidden'));
 
-  // Touch controls
-  if (btnLaneUp) {
-    btnLaneUp.addEventListener('click', (e) => {
+  // Mobile Touch & Click controls (Zero-latency instant response)
+  const bindTouchAndClick = (element, action) => {
+    if (!element) return;
+    let lastTouchTime = 0;
+    element.addEventListener('touchstart', (e) => {
       e.preventDefault();
-      game.switchLane('UP');
-    });
-  }
-  if (btnLaneDown) {
-    btnLaneDown.addEventListener('click', (e) => {
+      lastTouchTime = Date.now();
+      action();
+    }, { passive: false });
+
+    element.addEventListener('click', (e) => {
       e.preventDefault();
-      game.switchLane('DOWN');
+      if (Date.now() - lastTouchTime < 400) return; // Prevent duplicate trigger from touch
+      action();
     });
-  }
+  };
+
+  bindTouchAndClick(btnLaneUp, () => game.switchLane('UP'));
+  bindTouchAndClick(btnLaneDown, () => game.switchLane('DOWN'));
 
   // Initial render
   if (headerHighScore) headerHighScore.textContent = game.highScore.toLocaleString();
