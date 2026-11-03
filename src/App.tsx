@@ -17,6 +17,7 @@ import {
   ShieldAlert,
   Sparkles,
   Info,
+  Home,
 } from 'lucide-react';
 
 export default function App() {
@@ -73,6 +74,10 @@ export default function App() {
 
   const handleRestart = () => {
     gameRef.current?.restart();
+  };
+
+  const handleHome = () => {
+    gameRef.current?.ready();
   };
 
   const handleToggleMute = () => {
@@ -343,14 +348,24 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Restart Button */}
-              <button
-                onClick={handleRestart}
-                className="px-8 sm:px-10 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-extrabold text-lg sm:text-2xl shadow-[0_0_25px_rgba(0,240,255,0.6)] hover:scale-105 active:scale-95 transition cursor-pointer flex items-center gap-2 sm:gap-3 shrink-0"
-              >
-                <RotateCcw className="w-5 h-5 sm:w-6 sm:h-6" />
-                <span>다시 질주하기 [Enter]</span>
-              </button>
+              {/* Action Buttons: Restart & Home */}
+              <div className="flex flex-col sm:flex-row items-center gap-2.5 sm:gap-3.5 shrink-0 mt-1">
+                <button
+                  onClick={handleRestart}
+                  className="px-7 sm:px-9 py-2.5 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-extrabold text-base sm:text-xl shadow-[0_0_25px_rgba(0,240,255,0.6)] hover:scale-105 active:scale-95 transition cursor-pointer flex items-center gap-2"
+                >
+                  <RotateCcw className="w-5 h-5" />
+                  <span>다시 질주하기 [Enter]</span>
+                </button>
+
+                <button
+                  onClick={handleHome}
+                  className="px-6 sm:px-8 py-2.5 sm:py-3.5 rounded-xl sm:rounded-2xl bg-slate-800/90 hover:bg-slate-700/90 border border-slate-600 text-slate-200 font-extrabold text-base sm:text-xl hover:text-white shadow-lg hover:scale-105 active:scale-95 transition cursor-pointer flex items-center gap-2"
+                >
+                  <Home className="w-5 h-5" />
+                  <span>처음 화면으로 [Esc]</span>
+                </button>
+              </div>
             </div>
           )}
 

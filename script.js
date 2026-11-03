@@ -1892,6 +1892,8 @@ class Game {
     if (saved) this.highScore = parseInt(saved, 10) || 0;
 
     this.setupListeners();
+    this.lastTime = performance.now();
+    this.animFrameId = requestAnimationFrame((ts) => this.loop(ts));
     this.render();
   }
 
@@ -1915,6 +1917,14 @@ class Game {
       return;
     }
 
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      if (this.state === 'GAMEOVER' || this.state === 'PAUSED') {
+        this.ready();
+      }
+      return;
+    }
+
     if (this.state !== 'PLAYING') return;
 
     if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
@@ -1933,6 +1943,29 @@ class Game {
       soundEngine.playLaneSwitch();
       this.particles.emitExhaustFlame(this.player.x - 45, this.player.y, this.isFever);
     }
+  }
+
+  ready() {
+    this.state = 'READY';
+    soundEngine.stopEngine();
+
+    this.timeRemaining = TOTAL_GAME_TIME;
+    this.score = 0;
+    this.nitro = 0;
+    this.isFever = false;
+    this.feverTimer = 0;
+    this.combo = 0;
+    this.maxCombo = 0;
+    this.nearMissCount = 0;
+    this.crashCount = 0;
+    this.smashCount = 0;
+    this.spawnTimer = 0;
+    this.obstacles = [];
+
+    this.player.reset();
+
+    if (this.onStateChange) this.onStateChange(this.state);
+    this.emitStats();
   }
 
   start() {
@@ -1958,9 +1991,6 @@ class Game {
     this.emitStats();
 
     this.lastTime = performance.now();
-    if (this.animFrameId === null) {
-      this.loop(this.lastTime);
-    }
   }
 
   pause() {
@@ -1985,13 +2015,6 @@ class Game {
   }
 
   loop(timestamp) {
-    if (this.state === 'GAMEOVER') {
-      try {
-        this.render();
-      } catch (e) {}
-      return;
-    }
-
     let dt = (timestamp - this.lastTime) / 1000;
     this.lastTime = timestamp;
     if (dt > 0.08) dt = 0.08;
@@ -1999,6 +2022,14 @@ class Game {
     try {
       if (this.state === 'PLAYING') {
         this.update(dt);
+      } else if (this.state === 'READY') {
+        // Idle gentle parallax on ready/title screen
+        this.background.update(dt, 90);
+        this.player.update(dt, false);
+      } else if (this.state === 'GAMEOVER') {
+        // Subtle drift and settling particles on game over screen
+        this.background.update(dt, 50);
+        this.particles.update(dt, false);
       }
       this.render();
     } catch (err) {
@@ -2201,7 +2232,11 @@ class Game {
   gameOver() {
     this.state = 'GAMEOVER';
     soundEngine.stopEngine();
-    soundEngine.playGameOver();
+    try {
+      soundEngine.playGameOver();
+    } catch (e) {
+      console.warn('Audio playGameOver error:', e);
+    }
 
     if (this.score > this.highScore) {
       this.highScore = this.score;
@@ -2407,6 +2442,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const btnResume = document.getElementById('btn-resume');
   const btnRestartPaused = document.getElementById('btn-restart-paused');
   const btnRestartGameOver = document.getElementById('btn-restart-gameover');
+  const btnHomeGameOver = document.getElementById('btn-home-gameover');
   const btnCloseHelp = document.getElementById('btn-close-help');
 
   // Mobile Touch Controls
@@ -2490,6 +2526,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (btnResume) btnResume.addEventListener('click', () => game.resume());
   if (btnRestartPaused) btnRestartPaused.addEventListener('click', () => game.restart());
   if (btnRestartGameOver) btnRestartGameOver.addEventListener('click', () => game.restart());
+  if (btnHomeGameOver) btnHomeGameOver.addEventListener('click', () => game.ready());
 
   if (btnPauseHeader) {
     btnPauseHeader.addEventListener('click', () => {

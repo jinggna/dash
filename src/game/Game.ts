@@ -85,6 +85,8 @@ export class Game {
     }
 
     this.setupListeners();
+    this.lastTime = performance.now();
+    this.animFrameId = requestAnimationFrame(this.loop);
     this.render(); // initial frame
   }
 
@@ -113,6 +115,14 @@ export class Game {
       return;
     }
 
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      if (this.state === 'GAMEOVER' || this.state === 'PAUSED') {
+        this.ready();
+      }
+      return;
+    }
+
     if (this.state !== 'PLAYING') return;
 
     if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
@@ -132,6 +142,29 @@ export class Game {
       // Emit exhaust swoosh
       this.particles.emitExhaustFlame(this.player.x - 45, this.player.y, this.isFever);
     }
+  }
+
+  public ready() {
+    this.state = 'READY';
+    soundEngine.stopEngine();
+
+    this.timeRemaining = TOTAL_GAME_TIME;
+    this.score = 0;
+    this.nitro = 0;
+    this.isFever = false;
+    this.feverTimer = 0;
+    this.combo = 0;
+    this.maxCombo = 0;
+    this.nearMissCount = 0;
+    this.crashCount = 0;
+    this.smashCount = 0;
+    this.spawnTimer = 0;
+    this.obstacles = [];
+
+    this.player.reset();
+
+    if (this.onStateChange) this.onStateChange(this.state);
+    this.emitStats();
   }
 
   public start() {
@@ -157,9 +190,6 @@ export class Game {
     this.emitStats();
 
     this.lastTime = performance.now();
-    if (this.animFrameId === null) {
-      this.loop(this.lastTime);
-    }
   }
 
   public pause() {
@@ -193,6 +223,12 @@ export class Game {
     try {
       if (this.state === 'PLAYING') {
         this.update(dt);
+      } else if (this.state === 'READY') {
+        this.background.update(dt, 90);
+        this.player.update(dt, false);
+      } else if (this.state === 'GAMEOVER') {
+        this.background.update(dt, 50);
+        this.particles.update(dt, false);
       }
       this.render();
     } catch (err) {
@@ -448,7 +484,11 @@ export class Game {
   private gameOver() {
     this.state = 'GAMEOVER';
     soundEngine.stopEngine();
-    soundEngine.playGameOver();
+    try {
+      soundEngine.playGameOver();
+    } catch (e) {
+      console.warn('Audio playGameOver error:', e);
+    }
 
     // Save High Score
     if (this.score > this.highScore) {
